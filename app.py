@@ -4,6 +4,8 @@ from PIL import Image
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 import io
+import base64
+import tempfile
 
 # Function to transform mask image
 def transform_format(val):
@@ -19,7 +21,7 @@ def main():
     st.sidebar.title("Upload Mask Image")
     mask_image = st.sidebar.file_uploader("Upload mask image", type=["jpg", "jpeg", "png"])
 
-    # Text input for word cloud
+    # Text input for word acloud
     st.sidebar.title("Input Text")
     text = st.sidebar.text_area("Enter your text here", height=200)
 
@@ -36,37 +38,34 @@ def main():
                 for i in range(len(mask)):
                     transformed_mask[i] = list(map(transform_format, mask[i]))
 
-                # Function for changing the color of the text
-                def one_color_func(word=None, font_size=None, position=None, orientation=None, font_path=None,
+                # Function for changing the color of the text (keeping it black)
+                def black_color_func(word=None, font_size=None, position=None, orientation=None, font_path=None,
                                     random_state=None):
-                    # This HSL is for the green color
-                    h = 120
-                    s = 100
-                    l = 50
-                    return "hsl({}, {}%, {}%)".format(h, s, l)
+                    return "rgb(0, 0, 0)"
 
-                # Create WordCloud object
+                # Create WordCloud object with black color function
                 wc = WordCloud(background_color="white", mask=transformed_mask, stopwords=stopwords,
-                               max_words=200, repeat=True, color_func=one_color_func)
+                               max_words=200, repeat=True, color_func=black_color_func)
 
                 # Generate word cloud
                 wc.generate(text.upper())
 
-                # Convert to image
-                img_data = wc.to_image()
-
                 # Display the word cloud
-                st.image(img_data, caption='Word Cloud')
+                st.image(wc.to_image(), caption='Word Cloud')
 
                 # Option to download the word cloud image
                 if st.button('Download Word Cloud Image'):
-                    # Save image to a BytesIO buffer
-                    img_buffer = io.BytesIO()
-                    img_data.save(img_buffer, format='PNG')
-                    img_bytes = img_buffer.getvalue()
+                    # Save image to a temporary file
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
+                        wc.to_image().save(tmpfile.name)
 
-                    # Download link
-                    st.download_button(label='Download Image', data=img_bytes, file_name='wordcloud.png', mime='image/png')
+                        # Get the base64 representation of the file
+                        with open(tmpfile.name, "rb") as image_file:
+                            b64_str = base64.b64encode(image_file.read()).decode()
+
+                    # Create a download link
+                    href = f'<a href="data:image/png;base64,{b64_str}" download="wordcloud.png">Click here to download</a>'
+                    st.markdown(href, unsafe_allow_html=True)
             else:
                 st.warning("Please upload a mask image.")
         else:
