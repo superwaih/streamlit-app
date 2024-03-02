@@ -21,7 +21,7 @@ def main():
     st.sidebar.title("Upload Mask Image")
     mask_image = st.sidebar.file_uploader("Upload mask image", type=["jpg", "jpeg", "png"])
 
-    # Text input for word acloud
+    # Text input for word cloud
     st.sidebar.title("Input Text")
     text = st.sidebar.text_area("Enter your text here", height=200)
 
