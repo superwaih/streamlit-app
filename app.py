@@ -1,4 +1,3 @@
-
 import streamlit as st
 import numpy as np
 from PIL import Image
@@ -11,7 +10,7 @@ def transform_format(val):
     if val != 0:
         return 255
     else:
-        return val
+        return 0
 
 def main():
     st.title("Word Cloud Generator")
@@ -32,7 +31,7 @@ def main():
 
             # Load mask image
             if mask_image is not None:
-                mask = np.array(Image.open(mask_image))
+                mask = np.array(Image.open(mask_image).convert('L'))  # Convert to grayscale
                 transformed_mask = np.ndarray((mask.shape[0], mask.shape[1]), np.int32)
                 for i in range(len(mask)):
                     transformed_mask[i] = list(map(transform_format, mask[i]))
