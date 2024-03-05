@@ -7,7 +7,8 @@ import io
 import base64
 import tempfile
 
-path = r'./Montserrat-Bold.otf'
+#font path
+path = './Montserrat-Bold.otf'
 # Function to transform mask image
 def transform_format(val):
     if val != 0:
