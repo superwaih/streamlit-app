@@ -7,6 +7,7 @@ import io
 import base64
 import tempfile
 
+path = r'./Montserrat-Bold.otf'
 # Function to transform mask image
 def transform_format(val):
     if val != 0:
@@ -44,7 +45,9 @@ def main():
                     return "rgb(0, 0, 0)"
 
                 # Create WordCloud object with black color function
-                wc = WordCloud(background_color="white", mask=transformed_mask, stopwords=stopwords,
+                wc = WordCloud(background_color="white", mask=transformed_mask, 
+                               font_path = path,
+                               stopwords=stopwords,
                                max_words=200, repeat=True, color_func=black_color_func)
 
                 # Generate word cloud
